@@ -1,46 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:smart_erp_hotel/model/singleton.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:smart_erp_hotel/login/login.dart';
+import 'package:smart_erp_hotel/my_app_views/room_services.dart';
 import 'package:smart_erp_hotel/root.dart';
 
 import 'my_app.dart';
-import 'splashpage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const FirstApp());
+  runApp(ModularApp(module: AppModule(), child: AppWidget()));
 }
 
-class FirstApp extends StatelessWidget {
-  const FirstApp({super.key});
-
-  @override
+class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: ThemeData(
-          textTheme: const TextTheme(
-            labelLarge: TextStyle(fontWeight: FontWeight.bold),
-            labelSmall: TextStyle(fontWeight: FontWeight.bold),
-            labelMedium: TextStyle(fontWeight: FontWeight.bold),
-            bodyLarge: TextStyle(fontWeight: FontWeight.bold),
-            bodyMedium: TextStyle(fontWeight: FontWeight.bold),
-            bodySmall: TextStyle(fontWeight: FontWeight.bold),
-            displayLarge: TextStyle(fontWeight: FontWeight.bold),
-            displayMedium: TextStyle(fontWeight: FontWeight.bold),
-            displaySmall: TextStyle(fontWeight: FontWeight.bold),
-            titleLarge: TextStyle(fontWeight: FontWeight.bold),
-            titleMedium: TextStyle(fontWeight: FontWeight.bold),
-            titleSmall: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          fontFamily: GoogleFonts.poppins().fontFamily,
-        ),
-        navigatorKey: Singleton.mainNav,
-        debugShowCheckedModeBanner: false,
-        initialRoute: '/',
-        routes: {
-          '/splash': (context) => SplashPage(),
-          "/myapp": (BuildContext context) => const MyApp(),
-          "/": (BuildContext context) => const Root(),
-        });
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'Smart ERP Hotel',
+      // theme: ThemeData(primarySwatch: AppColors.contentColorRed),
+      routerConfig: Modular.routerConfig,
+    ); //added by extension
+  }
+}
+
+class AppModule extends Module {
+  @override
+  void routes(r) {
+    r.child('/', child: (context) => const Root(), children: [
+      ChildRoute(
+        '/login',
+        child: (context) => const LoginPage(),
+      ),
+    ]);
+    r.module('/Main', module: MainModule());
+  }
+}
+
+class MainModule extends Module {
+  @override
+  void routes(r) {
+    r.child('/RoomBooking', child: (context) => const MyApp(), children: [
+      ChildRoute('/RoomService', child: (context) => const RoomService()),
+    ]);
   }
 }
